@@ -13,7 +13,7 @@ import csv
 
 """ ~~~~~~~~~~~~~     TUNABLE PARAMETERS     ~~~~~~~~~~~~~ """
 # The N value in "N-Back" (usually 2)
-N = 1
+N = 2
 
 # Name of given trial
 TRIAL_NAME = "test1"
@@ -55,12 +55,6 @@ fontScale = 15.0
 fontThickness = 40
 countDownFontScale = 7.0
 coutDownFontThickness = 28
-
-
-# Normalize audio file to given target dB level - https://stackoverflow.com/questions/59102171/getting-timestamps-from-audio-using-pythons
-def match_target_amplitude(sound, target_dBFS):
-    change_in_dBFS = target_dBFS - sound.dBFS
-    return sound.apply_gain(change_in_dBFS)
 
 
 if __name__ == "__main__":
@@ -167,58 +161,16 @@ if __name__ == "__main__":
     sd.wait()
     wavfile.write(TRIAL_NAME + '.wav', sample_rate, myrecording)  # Save as WAV file
     print("Done.")
-    print("Calculating reaction times...")
 
     # Calculate the time at which each stimulus is displayed with respect to the start of the recording
     stimuli_time_stamps = np.array(
         [(stimuli_time_stamps[i] - recording_start_time).total_seconds() for i in range(NUM_TESTS)])
 
-    # Open .wav with pydub
-    audio_segment = AudioSegment.from_wav(TRIAL_NAME + ".wav")
-
-    # Normalize audio_segment to a threshold
-    normalized_sound = match_target_amplitude(audio_segment, SILENCE_THRESHOLD_DB)
-
-    # Generate nonsilent chunks (start, end) with pydub
-    response_timing_chunks = np.array(
-        detect_nonsilent(normalized_sound, min_silence_len=MIN_PERIOD_SILENCE_MS, silence_thresh=SILENCE_THRESHOLD_DB,
-                         seek_step=1))
-
-    # If unable to detect nonsilence, end program and notify user
-    if len(response_timing_chunks) == 0:
-        print("Could not detect user's responses. Silence threshold/Minimum silence period may need tuning.")
-        exit(1)
-
-    # Calculate the time that the user starts to speak in each nonsilent "chunk"
-    response_timing_markers = np.array(response_timing_chunks[:, 0]) / 1000.0
-
-    # Calculate the reponse times given the arrays for response_timing_markers and stimuli_time_stamps
-    reaction_times = []
-    for i in range(NUM_TESTS):
-        rt = float('nan')
-        if (i >= N) and (letter_test_sequence[i] == letter_test_sequence[i-N]):
-            # Determine the most accurate nonsilent chunk that is associated with a given iteration
-            for j in range(len(response_timing_markers)):
-                if response_timing_markers[j] > stimuli_time_stamps[i]:
-                    # If reaction is too fast, it means the program is considering a delayed response from previous stimulus
-                    # Thus, we should continue the loop if that is the case, otherwise, break and store the reaction time
-                    if response_timing_markers[j] - stimuli_time_stamps[i] < 0.1 \
-                            and reaction_times[-1] > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
-                        continue
-                    rt = response_timing_markers[j] - stimuli_time_stamps[i]
-                    break
-            # If there is no nonsilent chunk after the time that the stimulus is displayed, store reaction time as "nan"
-            # Also if the user's response is over 1.2s after the stimulus is displayed, then we know they either failed to
-            # respond or the audio was not recorded and intepreted properly.
-            if j >= len(response_timing_markers) or rt > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
-                rt = float('nan')
-        reaction_times.append(rt)
-
     # Write results to file
     with open(TRIAL_NAME + ".csv", 'w') as reac_file:
         writer = csv.writer(reac_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['Letter', 'Correct Answer', 'Reaction time (s)'])
+        writer.writerow(['Letter', 'Correct answer', 'Stimuli time from start (s)'])
         for i in range(NUM_TESTS):
             writer.writerow([LETTERS[letter_test_sequence[i]], correct_answers[i],
-                             reaction_times[i]])
+                             stimuli_time_stamps[i]])
     print("Done")
