@@ -5,8 +5,6 @@ from time import sleep
 import cv2
 import numpy as np
 import sounddevice as sd
-from pydub import AudioSegment
-from pydub.silence import detect_nonsilent
 from scipy.io import wavfile
 import random
 import csv
