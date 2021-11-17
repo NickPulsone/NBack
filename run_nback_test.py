@@ -27,10 +27,6 @@ FREQUENCY = 4
 # Name of the matlab file containing stimulus info (include filepath if necessary)
 NUM_TESTS = 25
 
-# The highest audio level (in dB) the program will determine to be considered "silence"
-SILENCE_THRESHOLD_DB = -20.0
-MIN_PERIOD_SILENCE_MS = 1000
-
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
 INTERIAL_INTERVAL_S = 2.00
@@ -60,20 +56,20 @@ coutDownFontThickness = 28
 if __name__ == "__main__":
     # Create test sequence and corresponding array containing correct answers (Y/N)
     random.seed()
-    letter_test_sequence = np.empty(NUM_TESTS, dtype=int)
+    letter_index_sequence = np.empty(NUM_TESTS, dtype=int)
     correct_answers = np.empty(NUM_TESTS, dtype=str)
     for i in range(0, N):
         correct_answers[i] = "N"
     for i in range(NUM_TESTS):
         if (i > N) and (random.randint(0, FREQUENCY - 1) == 0):
-            letter_test_sequence[i] = letter_test_sequence[i-N]
+            letter_index_sequence[i] = letter_index_sequence[i-N]
             correct_answers[i] = "Y"
         else:
             random_index = random.randint(0, len(LETTERS)-1)
             if i >= N:
-                while random_index == letter_test_sequence[i-N]:
+                while random_index == letter_index_sequence[i-N]:
                     random_index = random.randint(0, len(LETTERS) - 1)
-            letter_test_sequence[i] = random_index
+            letter_index_sequence[i] = random_index
             correct_answers[i] = "N"
 
     # Creates an array that contains the global time for each time stamp
@@ -141,7 +137,7 @@ if __name__ == "__main__":
     # Displays the text to the user for given number of iterations
     for i in range(NUM_TESTS):
         # Show image add the given array position to the user
-        cv2.imshow(window_name, stimuli_images[letter_test_sequence[i]])
+        cv2.imshow(window_name, stimuli_images[letter_index_sequence[i]])
         # Get global time of stimulus
         stimuli_time_stamps[i] = datetime.datetime.now()
         # Wait out the given delay, then destory the image
@@ -169,8 +165,8 @@ if __name__ == "__main__":
     # Write results to file
     with open(TRIAL_NAME + ".csv", 'w') as reac_file:
         writer = csv.writer(reac_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['Letter', 'Correct answer', 'Stimuli time from start (s)'])
+        writer.writerow(['Letter', 'Letter index', 'Correct answer', 'Stimuli time from start (s)'])
         for i in range(NUM_TESTS):
-            writer.writerow([LETTERS[letter_test_sequence[i]], correct_answers[i],
+            writer.writerow([LETTERS[letter_index_sequence[i]], letter_index_sequence[i], correct_answers[i],
                              stimuli_time_stamps[i]])
     print("Done")
