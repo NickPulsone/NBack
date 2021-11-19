@@ -21,8 +21,8 @@ LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S",
 NUM_TESTS = 25
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
-SILENCE_THRESHOLD_DB = -20.0
-MIN_PERIOD_SILENCE_MS = 1000
+SILENCE_THRESHOLD_DB = -21.5
+MIN_PERIOD_SILENCE_MS = 600
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
@@ -111,25 +111,28 @@ if __name__ == "__main__":
     for i in range(NUM_TESTS):
         rt = float('nan')
         clip_index_array[i] = -1
-        # If there is no response after a time stamp, clearly the user failed to respond...
-        if (i >= N) and (letter_index_sequence[i] == letter_index_sequence[i-N]):
+        # Only look for an answer after N number of stimuli have been displayed
+        if i < N or (stimuli_time_stamps[i] > response_timing_markers[-1]):
+            response_accuracies.append("N/A")
+            raw_responses.append("N/A")
+        else:
             # Determine the most accurate nonsilent chunk that is associated with a given iteration
             for j in range(len(response_timing_markers)):
                 if response_timing_markers[j] > stimuli_time_stamps[i]:
                     # If reaction is too fast, it means the program is considering a delayed response from previous stimulus
                     # Thus, we should continue the loop if that is the case, otherwise, break and store the reaction time
-                    if response_timing_markers[j] - stimuli_time_stamps[i] < 0.1 \
-                            and reaction_times[-1] > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
+                    if response_timing_markers[j] - stimuli_time_stamps[i] < 0.1 and len(reaction_times) > 0 and \
+                            reaction_times[-1] > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
                         continue
                     rt = response_timing_markers[j] - stimuli_time_stamps[i]
                     break
             # If there is no nonsilent chunk after the time that the stimulus is displayed, store reaction time as "nan"
-            # Also if the user's response is over the delay time and after the stimulus is displayed, then we know they either failed to
+            # Also if the user's response is over 1.6s after the stimulus is displayed, then we know they either failed to
             # respond or the audio was not recorded and intepreted properly.
-            if j >= len(response_timing_markers) or rt > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
+            if j >= len(response_timing_markers) or (rt > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S) * 1.2):
                 reaction_times.append(float('nan'))
                 raw_responses.append("N/A")
-                response_accuracies.append("FALSE")
+                response_accuracies.append("N/A")
                 continue
             else:
                 # Save index to clip index array
@@ -139,49 +142,21 @@ if __name__ == "__main__":
                     # listen for the data (load audio to memory)
                     audio_data = r.record(source)
                     # recognize (convert from speech to text)
-                    resp = "Undetected"
                     try:
-                        resp = (r.recognize_google(audio_data).split()[0])
-                        if isinstance(resp, str):
-                            resp = resp.upper()
+                        resp = (r.recognize_google(audio_data).split()[0]).upper()
+                    # If no response can be determined, report accuracies as N/A, store reaction time, and move on
                     except sr.UnknownValueError as err:
                         response_accuracies.append("N/A")
                         raw_responses.append("N/A")
                         reaction_times.append(rt)
                         continue
-                    if resp[0] == correct_answers[i]:
+                    # compare response from stt to the actual response, update response_accuracies accordingly
+                    if (resp[0] == "Y" and (letter_index_sequence[i] == letter_index_sequence[i-N])) or (
+                            resp[0] == "N" and (letter_index_sequence[i] != letter_index_sequence[i-N])):
                         response_accuracies.append("TRUE")
-                        raw_responses.append(resp)
-                    # If word not found, store response and mark as false
                     else:
                         response_accuracies.append("FALSE")
-                        raw_responses.append(resp)
-        else:
-            # Check if user responded. If so, they are incorrect, if not they are correct.
-            for j in range(len(response_timing_markers)):
-                if response_timing_markers[j] > stimuli_time_stamps[i] and response_timing_markers[j] - stimuli_time_stamps[i] <= (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
-                    with sr.AudioFile(os.path.join(clip_seperation_path, f"chunk{j}.wav")) as source:
-                        # listen for the data (load audio to memory)
-                        audio_data = r.record(source)
-                        # recognize (convert from speech to text)
-                        resp = "Undetected"
-                        try:
-                            resp = (r.recognize_google(audio_data).split()[0])
-                            if isinstance(resp, str):
-                                resp = resp.upper()
-                            response_accuracies.append("FALSE")
-                            reaction_times.append(response_timing_markers[j] - stimuli_time_stamps[i])
-                            raw_responses.append(resp)
-                            clip_index_array[i] = j
-                            break
-                        except sr.UnknownValueError as err:
-                            continue
-            # Test if the loop was broken out of. If so move on, if not, we know the user was right
-            if j >= len(response_timing_markers) - 1:
-                response_accuracies.append("TRUE")
-                raw_responses.append("N/A")
-            else:
-                continue
+                    raw_responses.append(resp)
         reaction_times.append(rt)
 
     # Create another array to label each reactiontime according to if it was within the alloted time or not
