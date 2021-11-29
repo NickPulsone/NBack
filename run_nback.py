@@ -23,7 +23,7 @@ LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S",
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 25
+NUM_TESTS = 10
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     print("Waiting for recording to stop...")
     sd.wait()
     wavfile.write(TRIAL_NAME + '.wav', sample_rate, myrecording)  # Save as WAV file
-    print("Done.")
+    print("Done. Saving data...")
 
     # Calculate the time at which each stimulus is displayed with respect to the start of the recording
     stimuli_time_stamps = np.array(
@@ -167,4 +167,4 @@ if __name__ == "__main__":
         for i in range(NUM_TESTS):
             writer.writerow([LETTERS[letter_index_sequence[i]], letter_index_sequence[i], correct_answers[i],
                              stimuli_time_stamps[i]])
-    print("Done")
+    print("Done.")
