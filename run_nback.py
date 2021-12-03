@@ -22,7 +22,7 @@ LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S",
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 25
+NUM_TESTS = 10
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
@@ -75,7 +75,6 @@ if __name__ == "__main__":
         # Wait out the stimuli delay
         while (time.time() - stim_start) < (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
             sleep(0.001)
-
 
     # Stop the recording, save file as .wav
     print("Waiting for recording to stop...")
