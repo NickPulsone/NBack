@@ -8,8 +8,8 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "test1"
-CSV_FILENAME = "test1.csv"
+TRIAL_NAME = "nback_test1"
+CSV_FILENAME = TRIAL_NAME + ".csv"
 
 # The N value in "N-Back" (usually 2)
 N = 2
@@ -18,7 +18,7 @@ N = 2
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 25
+NUM_TESTS = 10
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
 SILENCE_THRESHOLD_DB = -21.5
@@ -172,8 +172,13 @@ if __name__ == "__main__":
         writer = csv.writer(reac_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(
             ['LETTER', 'Correct Answer', 'User response', 'Accuracy (T/F)', 'Reaction time (s)',
-             'Reaction on time (T/F)', 'Clip Index'])
+             'Reaction on time (T/F)', 'Clip Index', ' ', ' ', 'Times that user speaks (from start)'])
         for i in range(NUM_TESTS):
-            writer.writerow([letter_sequence[i], correct_answers[i], raw_responses[i], response_accuracies[i],
-                             reaction_times[i], reaction_on_time[i], clip_index_array[i]])
+            if i >= len(response_timing_markers):
+                writer.writerow([letter_sequence[i], correct_answers[i], raw_responses[i], response_accuracies[i],
+                                 reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ', -1.0])
+            else:
+                writer.writerow([letter_sequence[i], correct_answers[i], raw_responses[i], response_accuracies[i],
+                                 reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ',
+                                 response_timing_markers[i]])
     print("Done")
