@@ -14,7 +14,7 @@ import csv
 N = 2
 
 # Name of given trial
-TRIAL_NAME = "test1"
+TRIAL_NAME = "nback_test1"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
