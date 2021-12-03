@@ -8,8 +8,8 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "test1"
-CSV_FILENAME = "test1.csv"
+TRIAL_NAME = "nback_test1"
+CSV_FILENAME = "nback_test1.csv"
 
 # The N value in "N-Back" (usually 2)
 N = 2
