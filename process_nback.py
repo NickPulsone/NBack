@@ -51,6 +51,7 @@ if __name__ == "__main__":
     correct_answers = np.array(data[:, 2], dtype=str)
     stimuli_time_stamps = np.array(data[:, 3], dtype=float)
 
+    print("Interpreting data (this may take a while)...")
     # Open .wav with pydub
     audio_segment = AudioSegment.from_wav(TRIAL_NAME + ".wav")
     rec_seconds = audio_segment.duration_seconds
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     clip_index_array = np.empty(NUM_TESTS, dtype=int)
     for i in range(NUM_TESTS):
         rt = float('nan')
-        clip_index_array[i] = -1
+        clip_index_array[i] = -9999
         # Only look for an answer after N number of stimuli have been displayed
         if i < N or (stimuli_time_stamps[i] > response_timing_markers[-1]):
             response_accuracies.append("N/A")
@@ -173,11 +174,15 @@ if __name__ == "__main__":
         writer.writerow(
             ['LETTER', 'Correct Answer', 'User response', 'Accuracy (T/F)', 'Reaction time (s)',
              'Reaction on time (T/F)', 'Clip Index', ' ', ' ', 'Times that user speaks (from start)'])
-        for i in range(NUM_TESTS):
+        num_rows_in_table = max([len(response_timing_markers), len(correct_answers)])
+        for i in range(num_rows_in_table):
             if i >= len(response_timing_markers):
                 writer.writerow([letter_sequence[i], correct_answers[i], raw_responses[i], response_accuracies[i],
-                                reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ', -1.0])
+                                 reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ', -1.0])
+            elif i >= len(correct_answers):
+                writer.writerow([-1, -1, -1, -1, -1, -1, -1, ' ', ' ', response_timing_markers[i]])
             else:
                 writer.writerow([letter_sequence[i], correct_answers[i], raw_responses[i], response_accuracies[i],
-                                 reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ', response_timing_markers[i]])
+                                 reaction_times[i], reaction_on_time[i], clip_index_array[i], ' ', ' ',
+                                 response_timing_markers[i]])
     print("Done")
