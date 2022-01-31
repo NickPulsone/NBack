@@ -11,7 +11,7 @@ N = 2
 REMOVE_CLIPS = []
 
 # Pause time in seconds
-DELAY = 2.75
+DELAY = 2.50
 
 # Trial name and name of csv file containing existing results to be modified
 TRIAL_NAME = "nback_test1"
@@ -96,7 +96,7 @@ for i in iteration_indices:
                 # If reaction is too fast, it means the program is considering a delayed response from previous stimulus
                 # Thus, we should continue the loop if that is the case, otherwise, break and store the reaction time
                 if response_timing_markers[j] - stimuli_time_stamps[i] < 0.1 and len(reaction_times) > 0 and \
-                        reaction_times[-1] > (DELAY):
+                        reaction_times[-1] > DELAY:
                     continue
                 rt = response_timing_markers[j] - stimuli_time_stamps[i]
                 break
