@@ -25,8 +25,8 @@ SILENCE_THRESHOLD_DB = -21.5
 MIN_PERIOD_SILENCE_MS = 600
 
 # The minimum period, in milliseconds, that could distinguish two different responses
-STIMULUS_INTERVAL_S = 0.75
-INTERIAL_INTERVAL_S = 2.00
+# STIMULUS_INTERVAL_S = 0.75
+INTERIAL_INTERVAL_S = 2.50
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 
 
@@ -123,14 +123,14 @@ if __name__ == "__main__":
                     # If reaction is too fast, it means the program is considering a delayed response from previous stimulus
                     # Thus, we should continue the loop if that is the case, otherwise, break and store the reaction time
                     if response_timing_markers[j] - stimuli_time_stamps[i] < 0.1 and len(reaction_times) > 0 and \
-                            reaction_times[-1] > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
+                            reaction_times[-1] > INTERIAL_INTERVAL_S:
                         continue
                     rt = response_timing_markers[j] - stimuli_time_stamps[i]
                     break
             # If there is no nonsilent chunk after the time that the stimulus is displayed, store reaction time as "nan"
             # Also if the user's response is over 1.6s after the stimulus is displayed, then we know they either failed to
             # respond or the audio was not recorded and intepreted properly.
-            if j >= len(response_timing_markers) or (rt > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S) * 1.2):
+            if j >= len(response_timing_markers) or (rt > INTERIAL_INTERVAL_S * 1.2):
                 reaction_times.append(float('nan'))
                 raw_responses.append("N/A")
                 response_accuracies.append("N/A")
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     # Create another array to label each reactiontime according to if it was within the alloted time or not
     reaction_on_time = np.empty(NUM_TESTS, dtype=bool)
     for i in range(NUM_TESTS):
-        if len(raw_responses[i]) > 0 and raw_responses[i] != "N/A" and reaction_times[i] > (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
+        if len(raw_responses[i]) > 0 and raw_responses[i] != "N/A" and reaction_times[i] > INTERIAL_INTERVAL_S:
             reaction_on_time[i] = False
         else:
             reaction_on_time[i] = True
