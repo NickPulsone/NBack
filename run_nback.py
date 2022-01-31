@@ -25,8 +25,8 @@ FREQUENCY = 4
 NUM_TESTS = 10
 
 # The minimum period, in milliseconds, that could distinguish two different responses
-STIMULUS_INTERVAL_S = 0.75
-INTERIAL_INTERVAL_S = 2.00
+# STIMULUS_INTERVAL_S = 0.75
+INTERIAL_INTERVAL_S = 2.5
 """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
 
 if __name__ == "__main__":
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     stimuli_time_stamps = np.empty(NUM_TESTS, dtype=datetime.datetime)
 
     # Define recording parameters and start recording
-    rec_seconds = int(NUM_TESTS) * (INTERIAL_INTERVAL_S + STIMULUS_INTERVAL_S) + 10
+    rec_seconds = int(NUM_TESTS) * INTERIAL_INTERVAL_S + 10
     sample_rate = 44100
     myrecording = sd.rec(int(rec_seconds * sample_rate), samplerate=sample_rate, channels=1)
     recording_start_time = datetime.datetime.now()
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         engine.runAndWait()
         engine.stop()
         # Wait out the stimuli delay
-        while (time.time() - stim_start) < (STIMULUS_INTERVAL_S + INTERIAL_INTERVAL_S):
+        while (time.time() - stim_start) < (INTERIAL_INTERVAL_S):
             sleep(0.001)
 
     # Stop the recording, save file as .wav
