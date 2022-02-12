@@ -47,9 +47,8 @@ if __name__ == "__main__":
             data.append(row)
     data = np.array(data)
     letter_sequence = np.array(data[:, 0], dtype=str)
-    letter_index_sequence = np.array(data[:, 1], dtype=int)
-    correct_answers = np.array(data[:, 2], dtype=str)
-    stimuli_time_stamps = np.array(data[:, 3], dtype=float)
+    correct_answers = np.array(data[:, 1], dtype=str)
+    stimuli_time_stamps = np.array(data[:, 2], dtype=float)
 
     print("Interpreting data (this may take a while)...")
     # Open .wav with pydub
@@ -152,8 +151,8 @@ if __name__ == "__main__":
                         reaction_times.append(rt)
                         continue
                     # compare response from stt to the actual response, update response_accuracies accordingly
-                    if (resp[0] == "Y" and (letter_index_sequence[i] == letter_index_sequence[i-N])) or (
-                            resp[0] == "N" and (letter_index_sequence[i] != letter_index_sequence[i-N])):
+                    if (resp[0] == "Y" and (letter_sequence[i] == letter_sequence[i-N])) or (
+                            resp[0] == "N" and (letter_sequence[i] != letter_sequence[i-N])):
                         response_accuracies.append("TRUE")
                     else:
                         response_accuracies.append("FALSE")
