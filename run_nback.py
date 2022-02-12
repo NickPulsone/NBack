@@ -5,19 +5,21 @@ from time import sleep
 import cv2
 import numpy as np
 import sounddevice as sd
-from scipy.io import wavfile
-import random
+from scipy.io import wavfile, loadmat
 import csv
 
 """ ~~~~~~~~~~~~~     TUNABLE PARAMETERS     ~~~~~~~~~~~~~ """
-# The N value in "N-Back" (usually 2)
+# Name of the matlab file containing the test sequence
+MAT_FILE_NAME = "NBACK_2_VersionA.mat"
+
+# The N value in "N-Back" (usually 1 or 2)
 N = 2
 
 # Name of given trial
 TRIAL_NAME = "nback_test1"
 
 # Colors dictionary that identifies the RGB values of the used colors
-LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
+LETTERS = np.array(["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"], dtype=str)
 
 # Frequency of matching n back letters is 1:FREQUENCY (FREQUENCY = 4 means 1 in 4 responses should be "Yes")
 FREQUENCY = 4
@@ -52,23 +54,10 @@ coutDownFontThickness = 28
 
 
 if __name__ == "__main__":
-    # Create test sequence and corresponding array containing correct answers (Y/N)
-    random.seed()
-    letter_index_sequence = np.empty(NUM_TESTS, dtype=int)
-    correct_answers = np.empty(NUM_TESTS, dtype=str)
-    for i in range(0, N):
-        correct_answers[i] = "N"
-    for i in range(NUM_TESTS):
-        if (i > N) and (random.randint(0, FREQUENCY - 1) == 0):
-            letter_index_sequence[i] = letter_index_sequence[i-N]
-            correct_answers[i] = "Y"
-        else:
-            random_index = random.randint(0, len(LETTERS)-1)
-            if i >= N:
-                while random_index == letter_index_sequence[i-N]:
-                    random_index = random.randint(0, len(LETTERS) - 1)
-            letter_index_sequence[i] = random_index
-            correct_answers[i] = "N"
+    # Get test sequence from mat file
+    mat = loadmat(MAT_FILE_NAME)
+    letter_sequence = mat["Sequence"]
+    answer_array = mat["Answers"]
 
     # Creates an array that contains the global time for each time stamp
     stimuli_time_stamps = np.empty(NUM_TESTS, dtype=datetime.datetime)
@@ -135,7 +124,7 @@ if __name__ == "__main__":
     # Displays the text to the user for given number of iterations
     for i in range(NUM_TESTS):
         # Show image add the given array position to the user
-        cv2.imshow(window_name, stimuli_images[letter_index_sequence[i]])
+        cv2.imshow(window_name, stimuli_images[np.where(LETTERS == letter_sequence[i])[0][0]])
         # Get global time of stimulus
         stimuli_time_stamps[i] = datetime.datetime.now()
         # Wait out the given delay, then destory the image
@@ -163,8 +152,7 @@ if __name__ == "__main__":
     # Write results to file
     with open(TRIAL_NAME + ".csv", 'w') as reac_file:
         writer = csv.writer(reac_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['Letter', 'Letter index', 'Correct answer', 'Stimuli time from start (s)'])
+        writer.writerow(['Letter', 'Correct answer', 'Stimuli time from start (s)'])
         for i in range(NUM_TESTS):
-            writer.writerow([LETTERS[letter_index_sequence[i]], letter_index_sequence[i], correct_answers[i],
-                             stimuli_time_stamps[i]])
+            writer.writerow([letter_sequence[i], answer_array[i], stimuli_time_stamps[i]])
     print("Done.")
