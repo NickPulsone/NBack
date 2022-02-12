@@ -3,8 +3,7 @@ import datetime
 from time import sleep
 import numpy as np
 import sounddevice as sd
-from scipy.io import wavfile
-import random
+from scipy.io import wavfile, loadmat
 import csv
 import pyttsx3
 import time
@@ -17,6 +16,9 @@ TRIAL_NAME = "nback_test1"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
+
+# Name of MATLAB file containing input sequence
+MAT_FILE_NAME = "NBACK_2_VersionA.mat"
 
 # Frequency of matching n back letters is 1:FREQUENCY (FREQUENCY = 4 means 1 in 4 responses should be "Yes")
 FREQUENCY = 4
@@ -36,26 +38,21 @@ if __name__ == "__main__":
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[1].id)
 
-    # Create test sequence and corresponding array containing correct answers (Y/N)
-    random.seed()
-    letter_index_sequence = np.empty(NUM_TESTS, dtype=int)
-    correct_answers = np.empty(NUM_TESTS, dtype=str)
-    for i in range(0, N):
-        correct_answers[i] = "N"
-    for i in range(NUM_TESTS):
-        if (i > N) and (random.randint(0, FREQUENCY - 1) == 0):
-            letter_index_sequence[i] = letter_index_sequence[i-N]
-            correct_answers[i] = "Y"
-        else:
-            random_index = random.randint(0, len(LETTERS)-1)
-            if i >= N:
-                while random_index == letter_index_sequence[i-N]:
-                    random_index = random.randint(0, len(LETTERS) - 1)
-            letter_index_sequence[i] = random_index
-            correct_answers[i] = "N"
+    # Get test sequence from mat file
+    mat = loadmat(MAT_FILE_NAME)
+    letter_sequence = mat["Sequence"]
+    answer_array = mat["Answers"]
 
     # Creates an array that contains the global time for each time stamp
     stimuli_time_stamps = np.empty(NUM_TESTS, dtype=datetime.datetime)
+
+    # Give the user a countdown
+    print("Starting in...")
+    for num in ["3..", "2..", "1.."]:
+        print(num)
+        sleep(1)
+    print("GO!!!")
+    sleep(1)
 
     # Define recording parameters and start recording
     rec_seconds = int(NUM_TESTS) * INTERIAL_INTERVAL_S + 10
@@ -68,12 +65,12 @@ if __name__ == "__main__":
     for i in range(NUM_TESTS):
         # Speak a letter (auditory stimulus), track global time of stimulus
         stim_start = time.time()
-        engine.say(LETTERS[letter_index_sequence[i]])
+        engine.say(letter_sequence[i])
         stimuli_time_stamps[i] = datetime.datetime.now()
         engine.runAndWait()
         engine.stop()
         # Wait out the stimuli delay
-        while (time.time() - stim_start) < (INTERIAL_INTERVAL_S):
+        while (time.time() - stim_start) < INTERIAL_INTERVAL_S:
             sleep(0.001)
 
     # Stop the recording, save file as .wav
@@ -91,7 +88,5 @@ if __name__ == "__main__":
         writer = csv.writer(reac_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(['Letter', 'Letter index', 'Correct answer', 'Stimuli time from start (s)'])
         for i in range(NUM_TESTS):
-            writer.writerow([LETTERS[letter_index_sequence[i]], letter_index_sequence[i], correct_answers[i],
-                             stimuli_time_stamps[i]])
+            writer.writerow([letter_sequence[i], answer_array[i], stimuli_time_stamps[i]])
     print("Done.")
-    
