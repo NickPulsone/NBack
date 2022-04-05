@@ -5,14 +5,14 @@ import numpy as np
 import sounddevice as sd
 from scipy.io import wavfile, loadmat
 import csv
-import pyttsx3
+import pyaudio
 import time
 """ ~~~~~~~~~~~~~     TUNABLE PARAMETERS     ~~~~~~~~~~~~~ """
 # The N value in "N-Back" (usually 2)
 N = 2
 
 # Name of given trial
-TRIAL_NAME = "nback_test1"
+TRIAL_NAME = "2back_test_auditory"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
@@ -24,7 +24,7 @@ MAT_FILE_NAME = "NBACK_2_VersionA.mat"
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 10
+NUM_TESTS = 5
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 # STIMULUS_INTERVAL_S = 0.75
@@ -32,11 +32,20 @@ INTERIAL_INTERVAL_S = 2.5
 """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
 
 if __name__ == "__main__":
+    # Load frequency data, convert to playable format
+    Letters_Data = loadmat("Letters.mat")
+    New_Letters_Data = {}
+    for letter in LETTERS:
+        New_Letters_Data[letter] = bytes(Letters_Data[letter.lower()][0])
+        print(letter + " done")
+    print(New_Letters_Data['A'])
+    """
     # Initialize engine for TTS
     engine = pyttsx3.init()
     engine.setProperty('rate', 100)
     voices = engine.getProperty('voices')
     engine.setProperty('voice', voices[1].id)
+    """
 
     # Get test sequence from mat file
     mat = loadmat(MAT_FILE_NAME)
@@ -61,17 +70,24 @@ if __name__ == "__main__":
     recording_start_time = datetime.datetime.now()
     sleep(1)
 
+    # Open a data stream to play audio
+    p = pyaudio.PyAudio()
+    stream = p.open(format=8, channels=1, rate=44100*2, output=True)
+
     # Displays the text to the user for given number of iterations
     for i in range(NUM_TESTS):
         # Speak a letter (auditory stimulus), track global time of stimulus
         stim_start = time.time()
-        engine.say(letter_sequence[i])
+        stream.write(New_Letters_Data[letter_sequence[i]])
         stimuli_time_stamps[i] = datetime.datetime.now()
-        engine.runAndWait()
-        engine.stop()
         # Wait out the stimuli delay
         while (time.time() - stim_start) < INTERIAL_INTERVAL_S:
             sleep(0.001)
+
+    # Terminate TTS stream
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
 
     # Stop the recording, save file as .wav
     print("Waiting for recording to stop...")
