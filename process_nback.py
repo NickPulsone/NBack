@@ -8,21 +8,21 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "nback_test1"
+TRIAL_NAME = "1back_test_auditory"
 CSV_FILENAME = TRIAL_NAME + ".csv"
 
 # The N value in "N-Back" (usually 2)
-N = 2
+N = 1
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 10
+NUM_TESTS = 30
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
 SILENCE_THRESHOLD_DB = -21.5
-MIN_PERIOD_SILENCE_MS = 600
+MIN_PERIOD_SILENCE_MS = 200
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 # STIMULUS_INTERVAL_S = 0.75
@@ -127,9 +127,9 @@ if __name__ == "__main__":
                     rt = response_timing_markers[j] - stimuli_time_stamps[i]
                     break
             # If there is no nonsilent chunk after the time that the stimulus is displayed, store reaction time as "nan"
-            # Also if the user's response is over 1.6s after the stimulus is displayed, then we know they either failed to
+            # Also if the user's response is over the defined delay after the stimulus is displayed, then we know they either failed to
             # respond or the audio was not recorded and intepreted properly.
-            if j >= len(response_timing_markers) or (rt > INTERIAL_INTERVAL_S * 1.2):
+            if j >= len(response_timing_markers) or (rt > INTERIAL_INTERVAL_S):
                 reaction_times.append(float('nan'))
                 raw_responses.append("N/A")
                 response_accuracies.append("N/A")
