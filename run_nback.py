@@ -24,7 +24,7 @@ MAT_FILE_NAME = "NBACK_2_VersionA.mat"
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 5
+NUM_TESTS = 30
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 # STIMULUS_INTERVAL_S = 0.75
@@ -33,12 +33,11 @@ INTERIAL_INTERVAL_S = 2.5
 
 if __name__ == "__main__":
     # Load frequency data, convert to playable format
-    Letters_Data = loadmat("Letters.mat")
+    Letters_Data = loadmat("Letters_Clipped.mat")
     New_Letters_Data = {}
     for letter in LETTERS:
-        New_Letters_Data[letter] = bytes(Letters_Data[letter.lower()][0])
-        print(letter + " done")
-    print(New_Letters_Data['A'])
+        new_byte_data = bytes(Letters_Data[letter.lower()][0])
+        New_Letters_Data[letter] = new_byte_data
     """
     # Initialize engine for TTS
     engine = pyttsx3.init()
@@ -74,7 +73,7 @@ if __name__ == "__main__":
     p = pyaudio.PyAudio()
     stream = p.open(format=8, channels=1, rate=44100*2, output=True)
 
-    # Displays the text to the user for given number of iterations
+    # Says the letters to the user for given number of iterations
     for i in range(NUM_TESTS):
         # Speak a letter (auditory stimulus), track global time of stimulus
         stim_start = time.time()
