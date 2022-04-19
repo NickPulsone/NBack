@@ -12,7 +12,7 @@ import time
 N = 2
 
 # Name of given trial
-TRIAL_NAME = "2back_test_auditory"
+TRIAL_NAME = "2back_test_auditory_419_1"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
@@ -73,12 +73,15 @@ if __name__ == "__main__":
     p = pyaudio.PyAudio()
     stream = p.open(format=8, channels=1, rate=44100*2, output=True)
 
+    print("Note: The first N stimuli warrant no response from subject.")
     # Says the letters to the user for given number of iterations
     for i in range(NUM_TESTS):
+        # Display stimulus info
+        print(f"Simulus {i+1}: Letter={letter_sequence[i]}, Answer={answer_array[i]}")
         # Speak a letter (auditory stimulus), track global time of stimulus
         stim_start = time.time()
-        stream.write(New_Letters_Data[letter_sequence[i]])
         stimuli_time_stamps[i] = datetime.datetime.now()
+        stream.write(New_Letters_Data[letter_sequence[i]])
         # Wait out the stimuli delay
         while (time.time() - stim_start) < INTERIAL_INTERVAL_S:
             sleep(0.001)
