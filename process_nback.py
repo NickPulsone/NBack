@@ -8,11 +8,11 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "1back_test_auditory"
+TRIAL_NAME = "2back_test_auditory_419_1"
 CSV_FILENAME = TRIAL_NAME + ".csv"
 
 # The N value in "N-Back" (usually 2)
-N = 1
+N = 2
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
@@ -21,7 +21,7 @@ LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S",
 NUM_TESTS = 30
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
-SILENCE_THRESHOLD_DB = -21.5
+SILENCE_THRESHOLD_DB = -20.5
 MIN_PERIOD_SILENCE_MS = 200
 
 # The minimum period, in milliseconds, that could distinguish two different responses
