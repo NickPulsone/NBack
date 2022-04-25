@@ -8,7 +8,7 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "2back_test_auditory_419_1"
+TRIAL_NAME = "2back_test_auditory_425_1"
 CSV_FILENAME = TRIAL_NAME + ".csv"
 
 # The N value in "N-Back" (usually 2)
@@ -18,7 +18,7 @@ N = 2
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 30
+NUM_TESTS = 20
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
 SILENCE_THRESHOLD_DB = -20.5
