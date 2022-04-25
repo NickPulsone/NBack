@@ -8,7 +8,7 @@ import os
 
 """ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  TUNABLE PARAMETERS    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ """
 # Trial name (subject name, etc)
-TRIAL_NAME = "nback_test1"
+TRIAL_NAME = "nback_test"
 CSV_FILENAME = TRIAL_NAME + ".csv"
 
 # The N value in "N-Back" (usually 2)
@@ -18,11 +18,11 @@ N = 2
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 10
+NUM_TESTS = 20
 
 # The highest audio level (in dB) the program will determine to be considered "silence"
 SILENCE_THRESHOLD_DB = -21.5
-MIN_PERIOD_SILENCE_MS = 600
+MIN_PERIOD_SILENCE_MS = 500
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
