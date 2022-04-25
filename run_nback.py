@@ -16,7 +16,7 @@ MAT_FILE_NAME = "NBACK_2_VersionA.mat"
 N = 2
 
 # Name of given trial
-TRIAL_NAME = "nback_test1"
+TRIAL_NAME = "nback_test"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = np.array(["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"], dtype=str)
@@ -25,7 +25,7 @@ LETTERS = np.array(["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", 
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 10
+NUM_TESTS = 20
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 STIMULUS_INTERVAL_S = 0.75
