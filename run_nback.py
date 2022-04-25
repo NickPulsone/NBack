@@ -12,7 +12,7 @@ import time
 N = 2
 
 # Name of given trial
-TRIAL_NAME = "2back_test_auditory_419_1"
+TRIAL_NAME = "2back_test_auditory"
 
 # Colors dictionary that identifies the RGB values of the used colors
 LETTERS = ["A", "B", "C", "D", "E", "H", "I", "K", "L", "M", "O", "P", "R", "S", "T"]
@@ -24,7 +24,7 @@ MAT_FILE_NAME = "NBACK_2_VersionA.mat"
 FREQUENCY = 4
 
 # Name of the matlab file containing stimulus info (include filepath if necessary)
-NUM_TESTS = 30
+NUM_TESTS = 20
 
 # The minimum period, in milliseconds, that could distinguish two different responses
 # STIMULUS_INTERVAL_S = 0.75
@@ -33,7 +33,7 @@ INTERIAL_INTERVAL_S = 2.5
 
 if __name__ == "__main__":
     # Load frequency data, convert to playable format
-    Letters_Data = loadmat("Letters_Clipped.mat")
+    Letters_Data = loadmat("Letters2.mat")
     New_Letters_Data = {}
     for letter in LETTERS:
         new_byte_data = bytes(Letters_Data[letter.lower()][0])
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Open a data stream to play audio
     p = pyaudio.PyAudio()
-    stream = p.open(format=8, channels=1, rate=44100*2, output=True)
+    stream = p.open(format=8, channels=1, rate=44100*4, output=True)
 
     print("Note: The first N stimuli warrant no response from subject.")
     # Says the letters to the user for given number of iterations
